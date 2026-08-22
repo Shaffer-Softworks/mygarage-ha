@@ -156,14 +156,14 @@ class MyGarageOdometerSensor(MyGarageVehicleEntity, SensorEntity):
 
     @property
     def native_unit_of_measurement(self) -> str:
-        if self.hass.config.units.is_metric:
+        if (self.hass.config.units.length_unit == UnitOfLength.KILOMETERS):
             return UnitOfLength.KILOMETERS
         return UnitOfLength.MILES
 
     @property
     def native_value(self) -> int | None:
         widget = self.widget
-        if self.hass.config.units.is_metric:
+        if (self.hass.config.units.length_unit == UnitOfLength.KILOMETERS):
             value = widget.get("odometer_km", widget.get("odometer"))
         else:
             value = widget.get("odometer", widget.get("odometer_km"))
@@ -190,12 +190,12 @@ class MyGarageFuelEconomySensor(MyGarageVehicleEntity, SensorEntity):
 
     @property
     def native_unit_of_measurement(self) -> str:
-        return "L/100km" if self.hass.config.units.is_metric else "mpg"
+        return "L/100km" if (self.hass.config.units.length_unit == UnitOfLength.KILOMETERS) else "mpg"
 
     @property
     def native_value(self) -> float | None:
         widget = self.widget
-        if self.hass.config.units.is_metric:
+        if (self.hass.config.units.length_unit == UnitOfLength.KILOMETERS):
             value = widget.get("recent_l_per_100km", widget.get("average_l_per_100km"))
         else:
             value = widget.get("recent_mpg", widget.get("average_mpg"))

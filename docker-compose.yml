@@ -1,0 +1,21 @@
+# Dev Home Assistant + MyGarage screenshot mock API.
+# Usage:
+#   docker compose up -d
+#   python3 scripts/dev_widget_mock.py   # in another terminal (or use host mock on 8686)
+#   HA_REFRESH_TOKEN=... python3 scripts/capture_screenshots.py
+# UI: http://localhost:8123
+
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: ha-mygarage-ha
+    restart: unless-stopped
+    ports:
+      - "8123:8123"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./docker_data/config:/config
+      - ./custom_components/mygarage:/config/custom_components/mygarage:ro
+    environment:
+      TZ: UTC

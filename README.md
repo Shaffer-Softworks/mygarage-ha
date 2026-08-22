@@ -4,6 +4,20 @@ Home Assistant custom integration for self-hosted [MyGarage](https://github.com/
 
 [![Validate](https://github.com/Shaffer-Softworks/mygarage-ha/actions/workflows/validate.yaml/badge.svg)](https://github.com/Shaffer-Softworks/mygarage-ha/actions/workflows/validate.yaml)
 
+## Screenshots
+
+| Integrations list | Integration hubs & devices |
+|---|---|
+| [![Integrations](docs/images/integrations.png)](docs/images/integrations.png) | [![Integration detail](docs/images/integration-detail.png)](docs/images/integration-detail.png) |
+
+| Add / reconfigure hub | Options menu |
+|---|---|
+| [![Config flow](docs/images/config-flow.png)](docs/images/config-flow.png) | [![Options menu](docs/images/options-menu.png)](docs/images/options-menu.png) |
+
+| Garage hub | Vehicle device |
+|---|---|
+| [![Garage device](docs/images/garage-device.png)](docs/images/garage-device.png) | [![Vehicle device](docs/images/vehicle-device.png)](docs/images/vehicle-device.png) |
+
 ## Features
 
 - **Sensors** from the Widget API: garage totals, per-vehicle odometer, fuel economy, engine hours, maintenance counts, last service/fuel dates
@@ -28,6 +42,8 @@ Home Assistant custom integration for self-hosted [MyGarage](https://github.com/
 3. Download **MyGarage**, restart Home Assistant
 4. Settings → Devices & Services → **Add Integration** → **MyGarage**
 
+![Add integration via search](docs/images/integrations.png)
+
 ### After HACS Default
 
 Search for **MyGarage** in HACS → Integrations (no custom repo needed).
@@ -42,6 +58,10 @@ Search for **MyGarage** in HACS → Integrations (no custom repo needed).
 | Username / password | No | Enables LiveLink, DTCs, reminders |
 
 Options: update keys and poll interval (default **60s**; stay at or above 60s to respect the widget rate limit).
+
+![Config flow](docs/images/config-flow.png)
+
+![Options menu](docs/images/options-menu.png)
 
 ## Services
 
