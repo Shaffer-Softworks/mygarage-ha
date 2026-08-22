@@ -168,5 +168,7 @@ jobs:
           fi
 
           if [ "${HAS_WORKFLOW_PAT}" != "true" ]; then
-            gh workflow run validate.yaml --ref "$BRANCH"
+            # zip_release HACS validation must run on the release tag, not the release branch.
+            echo "::notice::No WORKFLOW_TRIGGER_TOKEN — triggering Validate on ${TAG} (zip_release needs tag ref)."
+            gh workflow run validate.yaml --ref "$TAG"
           fi
