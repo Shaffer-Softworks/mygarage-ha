@@ -1,13 +1,19 @@
 {
   "domain": "mygarage",
   "name": "MyGarage",
-  "codeowners": ["@Shaffer-Softworks"],
+  "codeowners": [
+    "@Shaffer-Softworks"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/Shaffer-Softworks/mygarage-ha",
   "integration_type": "hub",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/Shaffer-Softworks/mygarage-ha/issues",
-  "loggers": ["custom_components.mygarage"],
-  "requirements": ["httpx>=0.27.0"],
+  "loggers": [
+    "custom_components.mygarage"
+  ],
+  "requirements": [
+    "httpx>=0.27.0"
+  ],
   "version": "0.1.0"
 }
