@@ -1,0 +1,107 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MyGarage",
+        "description": "Connect to your self-hosted MyGarage instance. Create a Widget API key (`mgwk_\u2026`) in MyGarage Settings \u2192 Integrations. Optional webhook token enables write services; optional username/password enable LiveLink and reminder entities.",
+        "data": {
+          "url": "MyGarage URL",
+          "widget_api_key": "Widget API key",
+          "webhook_token": "Webhook ingest token (optional)",
+          "username": "Username (optional, for LiveLink/reminders)",
+          "password": "Password (optional)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to MyGarage. Check the URL and that the instance is reachable.",
+      "invalid_auth": "Authentication failed. Check the widget API key and optional username/password. Widget keys require MyGarage auth mode `local` or `oidc` (not `none`).",
+      "webhook_not_configured": "MyGarage returned 503 \u2014 webhook ingest token may not be configured on the server.",
+      "unknown": "Unexpected error. Check the Home Assistant logs."
+    },
+    "abort": {
+      "already_configured": "This MyGarage instance is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MyGarage options",
+        "description": "Update credentials and poll interval (default 60s; widget API is rate-limited to 60 requests/minute).",
+        "data": {
+          "widget_api_key": "Widget API key",
+          "webhook_token": "Webhook ingest token",
+          "username": "Username",
+          "password": "Password",
+          "scan_interval": "Scan interval (seconds)"
+        }
+      }
+    }
+  },
+  "services": {
+    "log_fuel": {
+      "name": "Log fuel",
+      "description": "Log a fuel fill-up or EV charge via webhook.",
+      "fields": {
+        "vin": {
+          "name": "VIN",
+          "description": "Vehicle VIN or nickname."
+        },
+        "odometer_km": {
+          "name": "Odometer (km)"
+        },
+        "liters": {
+          "name": "Liters"
+        },
+        "kwh": {
+          "name": "kWh"
+        },
+        "cost": {
+          "name": "Cost"
+        },
+        "price_per_unit": {
+          "name": "Price per unit"
+        },
+        "is_full_tank": {
+          "name": "Full tank / full charge"
+        },
+        "notes": {
+          "name": "Notes"
+        },
+        "date": {
+          "name": "Date"
+        }
+      }
+    },
+    "log_odometer": {
+      "name": "Log odometer",
+      "description": "Log an odometer reading via webhook.",
+      "fields": {
+        "vin": {
+          "name": "VIN"
+        },
+        "odometer_km": {
+          "name": "Odometer (km)"
+        },
+        "notes": {
+          "name": "Notes"
+        },
+        "date": {
+          "name": "Date"
+        }
+      }
+    },
+    "complete_reminder": {
+      "name": "Complete reminder",
+      "description": "Mark a reminder complete via webhook.",
+      "fields": {
+        "vin": {
+          "name": "VIN"
+        },
+        "reminder_id": {
+          "name": "Reminder ID"
+        }
+      }
+    }
+  }
+}
