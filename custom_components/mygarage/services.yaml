@@ -1,0 +1,112 @@
+log_fuel:
+  name: Log fuel
+  description: Log a fuel fill-up or EV charge via the MyGarage webhook API.
+  fields:
+    vin:
+      name: VIN
+      description: Vehicle VIN (or nickname accepted by MyGarage).
+      required: true
+      example: "1HGCM82633A123456"
+      selector:
+        text:
+    odometer_km:
+      name: Odometer (km)
+      required: false
+      selector:
+        number:
+          min: 0
+          mode: box
+          step: 0.1
+    liters:
+      name: Liters
+      required: false
+      selector:
+        number:
+          min: 0
+          mode: box
+          step: 0.001
+    kwh:
+      name: kWh
+      required: false
+      selector:
+        number:
+          min: 0
+          mode: box
+          step: 0.001
+    cost:
+      name: Cost
+      required: false
+      selector:
+        number:
+          min: 0
+          mode: box
+          step: 0.01
+    price_per_unit:
+      name: Price per unit
+      required: false
+      selector:
+        number:
+          min: 0
+          mode: box
+          step: 0.001
+    is_full_tank:
+      name: Full tank / full charge
+      required: false
+      default: true
+      selector:
+        boolean:
+    notes:
+      name: Notes
+      required: false
+      selector:
+        text:
+    date:
+      name: Date
+      required: false
+      selector:
+        text:
+
+log_odometer:
+  name: Log odometer
+  description: Log an odometer reading via the MyGarage webhook API.
+  fields:
+    vin:
+      name: VIN
+      required: true
+      selector:
+        text:
+    odometer_km:
+      name: Odometer (km)
+      required: true
+      selector:
+        number:
+          min: 0
+          mode: box
+          step: 0.1
+    notes:
+      name: Notes
+      required: false
+      selector:
+        text:
+    date:
+      name: Date
+      required: false
+      selector:
+        text:
+
+complete_reminder:
+  name: Complete reminder
+  description: Mark a reminder complete via the MyGarage webhook API.
+  fields:
+    vin:
+      name: VIN
+      required: true
+      selector:
+        text:
+    reminder_id:
+      name: Reminder ID
+      required: true
+      selector:
+        number:
+          min: 1
+          mode: box
