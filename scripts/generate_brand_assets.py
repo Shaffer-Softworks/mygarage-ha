@@ -72,21 +72,18 @@ def logo_svg(height: int, *, dark: bool) -> str:
 
 
 def render_svg_playwright(svg: str, dest: Path) -> None:
-    from playwright.sync_api import sync_playwright
-
-    # Parse dimensions from the SVG root width/height attributes.
     import re
+
+    from playwright.sync_api import sync_playwright
 
     match = re.search(r'width="(\d+)" height="(\d+)"', svg)
     if not match:
         raise RuntimeError("Could not parse SVG dimensions")
     width, height = int(match.group(1)), int(match.group(2))
-    html = f"""<!DOCTYPE html><html><body style="margin:0;background:transparent">
-<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="{re.search(r'viewBox=\"([^\"]+)\"', svg).group(1)}">
-{svg.split('>', 1)[1].rsplit('</svg>', 1)[0]}
-</svg></body></html>"""
-    # Simpler: embed full svg
-    html = f"""<!DOCTYPE html><html><body style="margin:0;background:transparent">{svg}</body></html>"""
+    html = (
+        '<!DOCTYPE html><html><body style="margin:0;background:transparent">'
+        f"{svg}</body></html>"
+    )
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page(
