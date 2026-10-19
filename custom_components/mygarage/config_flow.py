@@ -11,6 +11,7 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import MyGarageApiClient, MyGarageApiError, MyGarageAuthError
 from .const import (
@@ -40,19 +41,17 @@ STEP_USER_SCHEMA = vol.Schema(
 async def _validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, str]:
     """Validate connectivity and credentials."""
     client = MyGarageApiClient(
+        async_get_clientsession(hass),
         data[CONF_URL],
         widget_api_key=data.get(CONF_WIDGET_API_KEY, ""),
         webhook_token=data.get(CONF_WEBHOOK_TOKEN, ""),
         username=data.get(CONF_USERNAME, ""),
         password=data.get(CONF_PASSWORD, ""),
     )
-    try:
-        health = await client.async_health()
-        summary = await client.async_get_summary()
-        if client.has_jwt_credentials:
-            await client.async_login()
-    finally:
-        await client.close()
+    health = await client.async_health()
+    await client.async_get_summary()
+    if client.has_jwt_credentials:
+        await client.async_login()
 
     version = (health or {}).get("version") or (health or {}).get("app") or "ok"
     return {"title": f"MyGarage ({version})"}
