@@ -35,5 +35,3 @@ jobs:
         uses: hacs/action@main
         with:
           category: integration
-          # Custom integrations ship brand assets in-repo; HA no longer accepts new domains in home-assistant/brands.
-          ignore: brands

@@ -5,16 +5,17 @@ So users can install this integration from HACS **without** adding a custom repo
 ## Prerequisites (this repo)
 
 - [x] `hacs.json` in repo root
-- [x] GitHub Actions: `hassfest` + `hacs/action` in `.github/workflows/validate.yaml` with `ignore: brands`
-- [x] `manifest.json` with required keys
+- [x] GitHub Actions: `hassfest` + `hacs/action` in `.github/workflows/validate.yaml` (no `ignore: brands`; in-repo brand assets must pass)
+- [x] `manifest.json` with required keys (no core deps like `httpx` in `requirements`)
 - [x] In-repo brand images under `custom_components/mygarage/brand/`
+- [x] HTTP via Home Assistant shared `aiohttp` session (`async_get_clientsession`)
 - [x] GitHub description + topics set on the repository About box
 
 ## Steps
 
-### 1. Keep `ignore: brands`
+### 1. Brand assets
 
-Home Assistant no longer accepts new custom integrations in `home-assistant/brands`. Leave `ignore: brands` in the HACS validation job.
+Ship brand images under `custom_components/mygarage/brand/` so HACS validation passes without `ignore: brands`.
 
 ### 2. Repository About settings
 

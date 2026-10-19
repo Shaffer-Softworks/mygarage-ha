@@ -12,6 +12,5 @@
   "loggers": [
     "custom_components.mygarage"
   ],
-  "requirements": [],
   "version": "0.1.0"
 }

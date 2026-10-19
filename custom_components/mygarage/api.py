@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any
 
-import httpx
+from aiohttp import ClientError, ClientSession, ClientTimeout
 
 _LOGGER = logging.getLogger(__name__)
+
+_TIMEOUT = ClientTimeout(total=20, sock_connect=10)
 
 
 class MyGarageApiError(Exception):
@@ -23,10 +26,11 @@ class MyGarageAuthError(MyGarageApiError):
 
 
 class MyGarageApiClient:
-    """httpx client covering widget, webhook, and JWT REST surfaces."""
+    """aiohttp client covering widget, webhook, and JWT REST surfaces."""
 
     def __init__(
         self,
+        session: ClientSession,
         base_url: str,
         *,
         widget_api_key: str = "",
@@ -34,13 +38,13 @@ class MyGarageApiClient:
         username: str = "",
         password: str = "",
     ) -> None:
+        self._session = session
         self._base_url = base_url.rstrip("/")
         self._widget_api_key = widget_api_key.strip()
         self._webhook_token = webhook_token.strip()
         self._username = username.strip()
         self._password = password
         self._jwt: str | None = None
-        self._client: httpx.AsyncClient | None = None
 
     @property
     def base_url(self) -> str:
@@ -54,43 +58,36 @@ class MyGarageApiClient:
     def has_jwt_credentials(self) -> bool:
         return bool(self._username and self._password)
 
-    async def _get_client(self) -> httpx.AsyncClient:
-        if self._client is None or self._client.is_closed:
-            self._client = httpx.AsyncClient(
-                base_url=self._base_url,
-                timeout=httpx.Timeout(20.0, connect=10.0),
-                headers={"Accept": "application/json"},
-            )
-        return self._client
-
-    async def close(self) -> None:
-        if self._client and not self._client.is_closed:
-            await self._client.aclose()
-        self._client = None
-
     async def _request(
         self,
         method: str,
         path: str,
         *,
         headers: dict[str, str] | None = None,
-        json: dict[str, Any] | None = None,
+        json_data: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
         retry_auth: bool = False,
     ) -> Any:
-        client = await self._get_client()
+        req_headers = {"Accept": "application/json"}
+        if headers:
+            req_headers.update(headers)
+
+        url = f"{self._base_url}{path}"
         try:
-            response = await client.request(
+            async with self._session.request(
                 method,
-                path,
-                headers=headers,
-                json=json,
+                url,
+                headers=req_headers,
+                json=json_data,
                 params=params,
-            )
-        except httpx.HTTPError as err:
+                timeout=_TIMEOUT,
+            ) as response:
+                status = response.status
+                text = await response.text()
+        except ClientError as err:
             raise MyGarageApiError(str(err)) from err
 
-        if response.status_code == 401 and retry_auth and self.has_jwt_credentials:
+        if status == 401 and retry_auth and self.has_jwt_credentials:
             await self.async_login()
             headers = dict(headers or {})
             headers["Authorization"] = f"Bearer {self._jwt}"
@@ -98,23 +95,26 @@ class MyGarageApiClient:
                 method,
                 path,
                 headers=headers,
-                json=json,
+                json_data=json_data,
                 params=params,
                 retry_auth=False,
             )
 
-        if response.status_code in (401, 403):
+        if status in (401, 403):
             raise MyGarageAuthError(
-                f"Unauthorized: {response.text}", status_code=response.status_code
+                f"Unauthorized: {text}", status_code=status
             )
-        if response.status_code >= 400:
+        if status >= 400:
             raise MyGarageApiError(
-                f"{response.status_code}: {response.text}",
-                status_code=response.status_code,
+                f"{status}: {text}",
+                status_code=status,
             )
-        if response.status_code == 204 or not response.content:
+        if status == 204 or not text:
             return None
-        return response.json()
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as err:
+            raise MyGarageApiError(f"Invalid JSON response: {err}") from err
 
     async def async_health(self) -> dict[str, Any]:
         """Probe connectivity via /health or /api/health."""
@@ -168,7 +168,7 @@ class MyGarageApiClient:
             "POST",
             "/api/v1/webhooks/fuel",
             headers=self._webhook_headers(),
-            json=payload,
+            json_data=payload,
         )
 
     async def async_webhook_odometer(self, payload: dict[str, Any]) -> Any:
@@ -176,7 +176,7 @@ class MyGarageApiClient:
             "POST",
             "/api/v1/webhooks/odometer",
             headers=self._webhook_headers(),
-            json=payload,
+            json_data=payload,
         )
 
     async def async_webhook_complete_reminder(
@@ -186,7 +186,7 @@ class MyGarageApiClient:
             "POST",
             "/api/v1/webhooks/reminders/complete",
             headers=self._webhook_headers(),
-            json={"vin": vin, "reminder_id": reminder_id},
+            json_data={"vin": vin, "reminder_id": reminder_id},
         )
 
     # ------------------------------------------------------------------
@@ -199,7 +199,7 @@ class MyGarageApiClient:
         data = await self._request(
             "POST",
             "/api/auth/login",
-            json={"username": self._username, "password": self._password},
+            json_data={"username": self._username, "password": self._password},
         )
         token = (data or {}).get("access_token")
         if not token:
