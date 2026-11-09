@@ -1,41 +1,23 @@
-# Publishing to the HACS Default Store
+# HACS Default Store
 
-So users can install this integration from HACS **without** adding a custom repository, include the repo in [hacs/default](https://github.com/hacs/default).
+MyGarage is included in the [HACS default integration list](https://github.com/hacs/default/blob/master/integration) as `Shaffer-Softworks/mygarage-ha`.
 
-## Prerequisites (this repo)
+Users can search for **MyGarage** directly in HACS, download it, restart Home Assistant, and add it from **Settings → Devices & Services**. Adding a custom repository is no longer required.
 
-- [x] `hacs.json` in repo root
-- [x] GitHub Actions: `hassfest` + `hacs/action` in `.github/workflows/validate.yaml` (no `ignore: brands`; in-repo brand assets must pass)
-- [x] `manifest.json` with required keys (no core deps like `httpx` in `requirements`)
-- [x] In-repo brand images under `custom_components/mygarage/brand/`
-- [x] HTTP via Home Assistant shared `aiohttp` session (`async_get_clientsession`)
-- [x] GitHub description + topics set on the repository About box
+## Maintaining the listing
 
-## Steps
+- Keep `hacs.json` in the repository root and the integration under `custom_components/mygarage/`.
+- Keep the required integration metadata in `manifest.json`, including the version, documentation, issue tracker, and codeowners.
+- Keep the in-repo brand images under `custom_components/mygarage/brand/`, including `icon.png`.
+- Keep both Hassfest and HACS validation passing in `.github/workflows/validate.yaml`, without ignored checks.
+- Keep the GitHub repository public and active, with a description, topics, issues enabled, and an identifiable open-source license.
 
-### 1. Brand assets
+## Publishing updates
 
-Ship brand images under `custom_components/mygarage/brand/` so HACS validation passes without `ignore: brands`.
+Use the **Create release** workflow to publish a version matching `manifest.json`, with the `mygarage.zip` release asset required by `hacs.json`. The archive must contain the integration files at its root, including `manifest.json` and `brand/`, rather than a nested `custom_components/mygarage/` directory.
 
-### 2. Repository About settings
+Check validation for the release tag and merge the workflow's manifest bump PR so the default branch stays in sync with the published version.
 
-- **Description**: `Home Assistant custom integration for self-hosted MyGarage (homelabforge/mygarage) — vehicles, maintenance, fuel, LiveLink.`
-- **Topics**: `hacs`, `home-assistant`, `home-assistant-custom-component`, `python`, `mygarage`, `vehicle-maintenance`, `livelink`
-- **Issues**: enabled
+The existing default-list entry covers future releases; a new `hacs/default` submission is not needed for each update.
 
-### 3. Publish a GitHub Release
-
-Create a release (e.g. `v0.1.0`) matching `manifest.json` version, with the `mygarage.zip` asset from the Create release workflow.
-
-### 4. Submit to hacs/default
-
-1. Fork [hacs/default](https://github.com/hacs/default)
-2. Branch from `master`
-3. Add `"Shaffer-Softworks/mygarage-ha"` to the `integration` JSON array in **alphabetical order**
-4. Open a PR from a **personal** account (owner or major contributor)
-
-Official docs: [Include default repositories](https://hacs.xyz/docs/publish/include/).
-
-### 5. After merge
-
-Update the README with the HACS Default badge and default-feed install instructions.
+Official requirements: [HACS default repositories](https://github.com/hacs/documentation/blob/main/source/docs/publish/include.md).

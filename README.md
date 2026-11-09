@@ -2,6 +2,8 @@
 
 Home Assistant custom integration for self-hosted [MyGarage](https://github.com/homelabforge/mygarage) — vehicles, maintenance, fuel, LiveLink.
 
+[![HACS Default](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/default)
+
 [![Validate](https://github.com/Shaffer-Softworks/mygarage-ha/actions/workflows/validate.yaml/badge.svg)](https://github.com/Shaffer-Softworks/mygarage-ha/actions/workflows/validate.yaml)
 
 ## Screenshots
@@ -35,18 +37,14 @@ Home Assistant custom integration for self-hosted [MyGarage](https://github.com/
 
 ## Install with HACS
 
-### Custom repository (until default-feed merge)
+MyGarage is included in the HACS default repository list. No custom repository is needed.
 
-1. HACS → ⋮ → **Custom repositories**
-2. Add `https://github.com/Shaffer-Softworks/mygarage-ha` as **Integration**
-3. Download **MyGarage**, restart Home Assistant
-4. Settings → Devices & Services → **Add Integration** → **MyGarage**
+1. Open **HACS** and search for **MyGarage**.
+2. Select **MyGarage** and download it.
+3. Restart Home Assistant.
+4. Go to **Settings → Devices & Services → Add Integration → MyGarage**.
 
 ![Add integration via search](docs/images/integrations.png)
-
-### After HACS Default
-
-Search for **MyGarage** in HACS → Integrations (no custom repo needed).
 
 ## Configuration
 
